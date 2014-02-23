@@ -1,16 +1,16 @@
 MediaHub
 ========
 
-= Objective =
+# Objective
 Build a feature rich, on-premise implementation of popular cloud services like Google Music, Flickr, Gmail, Google Docs,
 and Dropbox.
 
-= Motivations =
+# Motivations
 * Open source allows open modifications
 * The ability to actually have literal control of your media
 * Reduced lag and bandwidth use
 
-= Current Goals =
+# Current Goals
 The current goal is to simply replace Google Music/iTunes Cloud/Amazon Cloud Player with something I can host at home.
 
 The reasons I started are:
