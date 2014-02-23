@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html data-cast-api-enabled="true">
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content = "user-scalable = no" />
+    <title>Jamz</title>
+	<LINK rel="stylesheet" type="text/css">
+	<script src="lib/js/jquery-1.10.2.min.js"></script>
+    <script src="lib/js/APIConfig.js"></script>
+    <script src="lib/js/MediaServerWS.js"></script>
+    <script src="lib/js/Chromecast.js"></script>
+    <script src="lib/js/popup.js"></script>
+	<script>
+    var mediaTarget = "local";
+    var queueData;
+    var currentQueueItem;
+
+	// Initialize
+	/* Deal with touches on iOS
+	document.ontouchmove = function(e) {
+		var target = e.currentTarget;
+		while(target) {
+			target = target.parentNode;
+		}
+		e.preventDefault();
+	};
+	*/
+
+	$(document).load(function() {
+	});
+
+	$(document).ready(function() {
+		// $('#debug').text(window.devicePixelRatio);
+		if(window.devicePixelRatio >= 2) $('link').attr('href','assets/css/styles_2.css');
+		else if(window.devicePixelRatio >= 1) $('link').attr('href','assets/css/styles_1.css');
+		else if(window.devicePixelRatio >= 0) $('link').attr('href','assets/css/styles_0.css');
+		$('link').load(function() {
+			setListHeight();
+		});
+	});
+    $('#bottom_nav').resize(function() {
+        setListHeight();
+    });
+	$(window).resize(function() {
+		setListHeight();
+	});
+
+    showReceiverList = function(list) {
+        console.log("In onReceiverList");
+        // If the list is non-empty, show a widget with
+        // the friendly names of receivers.
+        // When a receiver is picked, invoke doLaunch with the receiver.
+        Chromecast.availableCastDevices = list;
+        var chromecastList = document.createElement("ul");
+        var listItem;
+
+        for(index in list) {
+            listItem = document.createElement('li');
+            $(listItem).html(list[index].name);
+            jQuery.data(listItem, "device", list[index]);
+            $(listItem).click(function(e) {
+                Chromecast.doLaunch(e);
+                mediaTarget = "chromecast";
+                disablePopup();
+            });
+            $(chromecastList).append(listItem);
+        }
+        listItem = document.createElement('li');
+        $(listItem).html("Play Locally");
+        $(listItem).data('device', null);
+        $(listItem).click(function() {
+            Chromecast.stopActivity();
+            mediaTarget = "local";
+            disablePopup();
+        });
+        $(chromecastList).append(listItem);
+        $("#popupBoxTitle").text("Choose target");
+        $("#popupBoxContentArea").empty();
+        $("#popupBoxContentArea").append(chromecastList);
+        centerPopup();
+        loadPopup();
+    };
+	function setListHeight() {
+		var nav_height = 0;
+		nav_height = $('#top_nav').height() + $('#bottom_nav').height()+2;
+		$('#list_display').height($(window).height() - nav_height);
+	}
+    function getArtists() {
+        MediaServerWS.getArtists(500, 0, getArtistsComplete);
+    }
+    function getArtistsComplete(response) {
+        if(response.status == "ERROR") {
+            console.log("There was a problem fetching a list of artists.");
+            return;
+        } else {
+            var key;
+            var name;
+            $("#musicQueue").empty();
+            for(key in response.data) {
+                name = response.data[key].name;
+                queueItem = document.createElement("li");
+                $(queueItem).addClass("list_item");
+                $(queueItem).attr("id", response.data[key].id);
+                $(queueItem).text(name);
+                $(queueItem).click(function(e) {
+                    console.log("Getting songs for artist: "+e.target.id);
+                    MediaServerWS.getArtistSongs(e.target.id, getSongsComplete);
+                });
+                $("#musicQueue").append(queueItem);
+            }
+            // Scroll viewport to the top
+            $("#list_display").scrollTop(0);
+        }
+    }
+    function getSongs() {
+        MediaServerWS.getSongs(1400, 0, getSongsComplete);
+    }
+    function getSongsComplete(response) {
+        var song = null;
+        var title = "";
+        var songURL = "";
+        var queueItem = null;
+        if(response.status == "ERROR") {
+            console.log("There was an error getting the song info.");
+            return;
+        }
+        $("#musicQueue").empty();
+        queueData = new Array();
+        for(key in response.data) {
+            song = response.data[key];
+            title = song.title;
+            songURL = APIConfig.HOST+song.file.filename;
+            queueItem = document.createElement("li");
+            $(queueItem).addClass("list_item");
+            $(queueItem).attr("id", song.id);
+            $(queueItem).text(title);
+            $(queueItem).click(function(e) {
+                currentQueueItem = e.target;
+                playSong(currentQueueItem.id);
+                $(".item_playing", "#musicQueue").toggleClass("item_playing");
+                $(e.target).addClass("item_playing");
+            });
+            $("#musicQueue").append(queueItem);
+            queueData[song.id] = song;
+        }
+        // Scroll viewport to the top
+        $("#list_display").scrollTop(0);
+    }
+    function playSong(songId) {
+        var song = queueData[songId];
+        window.document.title = song.title;
+        var url = APIConfig.HOST+song.file.filename;
+        if(mediaTarget == "chromecast") {
+            Chromecast.playMusic(url);
+        } else if(mediaTarget == "local") {
+            var localPlayer = $("#player");
+            localPlayer.attr("src", url);
+            localPlayer[0].load();
+            localPlayer[0].play();
+        }
+    }
+    function playPreviousSong(e) {
+        var previousQueueItem = currentQueueItem.previousSibling;
+        if(previousQueueItem == null) return;
+        $(currentQueueItem).removeClass("item_playing");
+        currentQueueItem = previousQueueItem;
+        $(currentQueueItem).addClass("item_playing");
+        var previousSongId = previousQueueItem.id;
+        playSong(previousSongId);
+    }
+    function playNextSong(e) {
+        var nextQueueItem = currentQueueItem.nextSibling;
+        if(nextQueueItem == null) return;
+        $(currentQueueItem).removeClass("item_playing");
+        currentQueueItem = nextQueueItem;
+        $(currentQueueItem).addClass("item_playing");
+        var nextSongId = nextQueueItem.id;
+        playSong(nextSongId);
+    }
+    function pause(e) {
+        var url = APIConfig.HOST;
+        if(mediaTarget == "chromecast") {
+            Chromecast.pauseMusic(url);
+        } else if(mediaTarget == "local") {
+            var localPlayer = $("#player");
+            if(localPlayer[0].paused) localPlayer[0].play();
+            else localPlayer[0].pause();
+        }
+    }
+	</script>
+</head>
+<body>
+<ul id="top_nav" class="nav">
+	<li class="nav_tab button">Playlists</li>
+	<li class="nav_tab button" onclick="getArtists()">Artists</li>
+	<li class="nav_tab button">Albums</li>
+	<li class="nav_tab button" onclick="getSongs()">Songs</li>
+	<li class="nav_tab button">Search</li>
+</ul>
+<div id="list_display">
+	<ul id="musicQueue" class="item_list">
+	</ul>
+</div>
+<div id="bottom_nav" class="controls">
+	<ul class="nav">
+		<!--
+		<li id="debug" class="nav_tab" onClick="setListHeight()"></li>
+		-->
+        <li class="nav_tab button" onclick="pause(event)">Play</li>
+		<li class="nav_tab button" onclick="playPreviousSong(event)">&lt;&lt;</li>
+		<li class="nav_tab button" onclick="playNextSong(event)">&gt;&gt;</li>
+		<li class="nav_tab button" onclick="pause(event);Chromecast.initialize(showReceiverList); Chromecast.nextSongCallback = playNextSong;">Cast</li>
+	</ul>
+    <audio id="player" onended="playNextSong(event)">
+        Your browser doesn't support the &lt;audio&gt; tag. Install a modern browser like <a href="https://www.google.com/intl/en/chrome/browser/">Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a>.
+    </audio>
+</div>
+<div id="popupBox">
+    <a id="popupBoxClose">x</a>
+    <h1 id="popupBoxTitle"></h1>
+    <p id="popupBoxContentArea">
+    </p>
+</div>
+<div id="backgroundPopup"></div>
+</body>
+</html>

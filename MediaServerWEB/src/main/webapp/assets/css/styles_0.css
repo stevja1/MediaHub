@@ -1,0 +1,131 @@
+body {
+	margin: 0px;
+	padding: 0px;
+	font-family: "Lucida Grande", sans-serif;
+    background: linear-gradient(to bottom, #494949 30%,#676767 100%);
+}
+.button:hover {
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.nav {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	min-width: 48em;
+	text-align: center;
+	background: linear-gradient(to bottom, #ff9d22 0%,#ffae44 100%);
+	box-shadow: 0px 0px 20px #232323
+}
+.nav>li, .nav>li:hover, .nav>li:focus
+{
+	text-decoration: none;
+	-webkit-transition: 150ms linear 0s;
+	-moz-transition: 150ms linear 0s;
+	-o-transition: 150ms linear 0s;
+	transition: 150ms linear 0s;
+	outline: 0 none;
+}
+.nav>li {
+	color: #ffffff;
+	text-shadow: 0px 0px 1px #454545;
+}
+.nav>li:hover {
+	text-shadow: 0px 0px 1px #454545, 0px 0px 10px #ffffff;
+}
+.nav_tab {
+	display: inline-block;
+	font-size: 18pt;
+	width: 6em;
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+#list_display {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 430px;
+    border: 1px black solid;
+}
+.controls {
+	position: fixed;
+	z-index: 100;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+}
+.item_list {
+	margin: 0px;
+	padding: 0px;
+}
+.list_item:hover {
+	color: white;
+	background-color: #888888;
+	cursor: pointer;
+}
+.list_item:hover {
+    cursor: pointer;
+}
+.item_playing {
+	color: white;
+	background-color: #787878;
+	cursor: pointer;
+}
+.list_item {
+	font-size: 22pt;
+	padding-top: .4em;
+	padding-bottom: .4em;
+	padding-left: .4em;
+	color: #dedede;
+}
+
+#backgroundPopup {
+  display: none;
+  position: fixed;
+  _position: absolute; /* hack for internet explorer 6*/
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: #000000;
+  border: 1px solid #cecece;
+  z-index: 1;
+}
+
+#popupBox {
+  display: none;
+  position: fixed;
+  _position: absolute; /* hack for internet explorer 6*/
+  height: 384px;
+  width: 408px;
+  background: #FFFFFF;
+  border: 2px solid #cecece;
+  z-index: 2;
+  padding: 12px;
+  font-size: 13px;
+  color: #000000;
+}
+
+#popupBox h1 {
+  text-align: left;
+  color: #000000;
+  font-size: 22px;
+  font-weight: 700;
+  border-bottom: 1px dotted #D3D3D3;
+  padding-bottom: 2px;
+  margin-bottom: 20px;
+}
+
+#popupBoxClose {
+  font-size: 14px;
+  line-height: 14px;
+  right: 6px;
+  top: 4px;
+  position: absolute;
+  color: #6fa5fd;
+  font-weight: 700;
+  display: block;
+  cursor: pointer;
+}

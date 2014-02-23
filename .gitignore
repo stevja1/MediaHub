@@ -2,6 +2,9 @@
 *.iml
 target
 .idea
+MediaServerEAR/target
+MediaServerWEB/target
+MediaServerEJB/target
 
 # Package Files #
 *.jar
