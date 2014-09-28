@@ -9,6 +9,7 @@ import org.jaredstevens.servers.db.operations.AlbumOps;
 import org.jaredstevens.servers.db.operations.ArtistOps;
 import org.jaredstevens.servers.db.operations.ConfigurationOps;
 import org.jaredstevens.servers.db.operations.SongOps;
+import org.jaredstevens.servers.music.MetaData;
 import org.jaredstevens.servers.utilities.Utilities;
 
 import javax.annotation.Resource;
@@ -69,7 +70,7 @@ public class PopulateMetaData implements IPopulateMetaData {
 		ConfigurationOps configConn = new ConfigurationOps();
 		configConn.setEm(this.getEm());
 		Configuration config = Utilities.getConfig(configConn);
-		String path = config.getSongPath();
+		String path = config.getMediaRoot();
 		org.jaredstevens.servers.db.entities.File fileRecord;
 		SongOps songConn = new SongOps();
 		ArtistOps artistConn = new ArtistOps();
@@ -93,13 +94,13 @@ public class PopulateMetaData implements IPopulateMetaData {
 			for(Song song : songs) {
 				if(song.getAlbum().getTitle().equals("Unknown Album") && song.getAlbum().getArtist().getName().equals("Unknown Artist")) {
 					fileRecord = song.getFile();
-					tag = (ID3v2)this.getTag(Utilities.buildPath(path,fileRecord.getFilename()));
+					tag = (ID3v2)MetaData.getTag(Utilities.buildPath(path,fileRecord.getFilename()));
 					if(tag == null) continue;
-					artistName = PopulateMetaData.getArtist(tag);
+					artistName = MetaData.getArtist(tag);
 					title = tag.getTitle();
 					albumName = tag.getAlbum();
-					trackNum = PopulateMetaData.getTrack(tag.getTrack());
-					albumTrackCount = PopulateMetaData.getAlbumTrackCount(tag.getTrack());
+					trackNum = MetaData.getTrack(tag.getTrack());
+					albumTrackCount = MetaData.getAlbumTrackCount(tag.getTrack());
 
 					System.out.println("Looking up artist: "+artistName);
 					artistRecord = artistConn.getArtistByName(artistName);
@@ -140,66 +141,6 @@ public class PopulateMetaData implements IPopulateMetaData {
 				retVal = album;
 				break;
 			}
-		}
-		return retVal;
-	}
-
-	public static String getArtist(ID3v1 tag) {
-		String artist;
-		if(tag.getClass().getSimpleName() == "ID3v23Tag") {
-			// Process v2 version of the tag
-			if(tag.getArtist() != null) artist = tag.getArtist();
-			else if(((ID3v2)tag).getAlbumArtist() != null) artist = ((ID3v2)tag).getAlbumArtist();
-			else if(((ID3v2)tag).getOriginalArtist() != null) artist = ((ID3v2)tag).getOriginalArtist();
-			else artist = "Unknown Artist";
-		} else {
-			// Process v1 version of the tag
-			if(tag.getArtist() != null) artist = tag.getArtist();
-			else artist = "Unknown Artist";
-		}
-		return artist;
-	}
-
-	public static int getTrack(String track) {
-		int retVal = -1;
-		if(track.contains("/")) {
-			retVal = Integer.valueOf(track.split("/")[0]);
-		} else {
-			// Check for number format exception
-			try {
-				retVal = Integer.valueOf(track);
-			} catch(NumberFormatException e) {
-				System.out.println("Couldn't parse the track.");
-			}
-		}
-		return retVal;
-	}
-
-	public static int getAlbumTrackCount(String track) {
-		int retVal = -1;
-		if(track.contains("/")) {
-			retVal = Integer.valueOf(track.split("/")[1]);
-		}
-		return retVal;
-	}
-
-	public ID3v1 getTag(String filename) {
-		ID3v1 retVal = null;
-		Mp3File fileData = null;
-		try {
-			fileData = new Mp3File(filename);
-		} catch(InvalidDataException e) {
-			System.out.println("InvalidDataException: "+e.getMessage());
-		} catch(UnsupportedTagException e) {
-			System.out.println("UnsupportedTagException: "+e.getMessage());
-		} catch(FileNotFoundException e) {
-			System.out.println("Skipping missing file: "+filename+"\n"+e.getMessage());
-		} catch(IOException e) {
-			System.out.println("IOException: "+e.getMessage());
-		}
-		if(fileData != null) {
-			if(fileData.hasId3v2Tag()) retVal = fileData.getId3v2Tag();
-			else if(fileData.hasId3v1Tag()) retVal = fileData.getId3v1Tag();
 		}
 		return retVal;
 	}

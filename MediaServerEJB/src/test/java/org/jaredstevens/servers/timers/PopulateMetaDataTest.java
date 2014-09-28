@@ -50,7 +50,7 @@ public class PopulateMetaDataTest {
 		ConfigurationOps configConn = new ConfigurationOps();
 		configConn.setEm(this.em);
 		Configuration config = Utilities.getConfig(configConn);
-		if(config == null || !config.getSongPath().equals("/Users/jarstev")) {
+		if(config == null || !config.getMediaRoot().equals("/Users/jarstev")) {
 			configConn.save("/Users/jarstev");
 		}
 		SongOps songConn = new SongOps();

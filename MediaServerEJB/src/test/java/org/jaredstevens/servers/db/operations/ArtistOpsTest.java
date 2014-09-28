@@ -54,7 +54,10 @@ public class ArtistOpsTest {
 		File file = OpsUtils.saveFileRecord(this.em);
 		Song song = OpsUtils.saveSongRecord(album, file, this.em);
 		if(artist == null || artist.getId() <= 0) fail("Failed to save artist record");
+		// Flush the data to the database
 		this.em.flush();
+		// Detach persisted objects so that when we do the "getById" call, it gets the newly saved Album and Song data.
+		this.em.clear();
 		Artist artist2 = conn.getById(artist.getId());
 		if(artist2 == null || artist2.getId() <= 0) fail("Failed to get artist data.");
 		if(artist2.getAlbums() == null || artist2.getAlbums().size() <= 0) fail("Failed to get album data linked to artist.");

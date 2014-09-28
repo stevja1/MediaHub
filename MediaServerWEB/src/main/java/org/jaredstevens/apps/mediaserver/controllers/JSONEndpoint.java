@@ -42,7 +42,6 @@ public class JSONEndpoint {
 	/**
 	 * Artist Methods
 	 */
-
 	@RequestMapping(value="/getArtists/{pageCount}/{pageIndex}", method = RequestMethod.GET)
 	public @ResponseBody Response_JSON getArtists(@PathVariable int pageCount,@PathVariable int pageIndex) throws Exception {
 		Response_JSON retVal = new Response_JSON();
@@ -238,6 +237,17 @@ public class JSONEndpoint {
 		if(e.getMessage() != null && e.getMessage().length() > 0)
 			retVal.setMessage(e.getMessage());
 		else retVal.setMessage("Unknown exception thrown: " + e.toString());
+		return retVal;
+	}
+
+	/**
+	 * Music Import methods
+	 */
+	@RequestMapping(value="/reinitializeLibrary/{directory}", method = RequestMethod.GET)
+	public @ResponseBody Response_JSON reinitializeLibrary(@PathVariable String directory) throws Exception {
+		Response_JSON retVal = new Response_JSON();
+		retVal.setStatus(Response_JSON.Status.ERROR);
+
 		return retVal;
 	}
 }

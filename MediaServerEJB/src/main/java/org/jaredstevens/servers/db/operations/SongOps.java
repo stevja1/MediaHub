@@ -34,16 +34,14 @@ public class SongOps implements ISongOps {
 		Artist artist = this.getEm().find(Artist.class, artistId);
 		Query sql = this.getEm().createQuery("SELECT DISTINCT s FROM Song s JOIN s.album al WHERE al.artist=:artist ORDER BY al.id,s.trackNum");
 		sql.setParameter("artist",artist);
-		List<Song> retVal = (List<Song>)sql.getResultList();
-		return retVal;
+		return (List<Song>)sql.getResultList();
 	}
 
 	public List<Song> getAlbumSongs(long albumId) {
 		Album album = this.getEm().find(Album.class, albumId);
 		Query sql = this.getEm().createQuery("SELECT DISTINCT s FROM Song s WHERE s.album=:album");
 		sql.setParameter("album",album);
-		List<Song> retVal = (List<Song>)sql.getResultList();
-		return retVal;
+		return (List<Song>)sql.getResultList();
 	}
 
 	public List<Song> getSongs(int pageCount, int pageIndex) {

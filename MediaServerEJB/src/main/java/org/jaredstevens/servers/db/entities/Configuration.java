@@ -9,10 +9,15 @@ import java.io.Serializable;
 @Entity
 @Table(name="configuration")
 public class Configuration implements Serializable {
-	private long id;
-	private String songPath;
-
 	@Id
+	private long id;
+
+	@Column(name="media_root")
+	private String mediaRoot;
+
+	@Column(name="scripts_root")
+	private String scriptsRoot;
+
 	public long getId() {
 		return id;
 	}
@@ -21,12 +26,19 @@ public class Configuration implements Serializable {
 		this.id = id;
 	}
 
-	@Column(name="song_path")
-	public String getSongPath() {
-		return songPath;
+	public String getMediaRoot() {
+		return mediaRoot;
 	}
 
-	public void setSongPath(String songPath) {
-		this.songPath = songPath;
+	public void setMediaRoot(String mediaRoot) {
+		this.mediaRoot = mediaRoot;
+	}
+
+	public String getScriptsRoot() {
+		return scriptsRoot;
+	}
+
+	public void setScriptsRoot(String scriptsRoot) {
+		this.scriptsRoot = scriptsRoot;
 	}
 }

@@ -71,7 +71,6 @@ public class OpsUtils {
 		String filename = "/home/jstevens/01 - Happy Pills.mp3";
 		File.FileType fileType = File.FileType.SONG;
 
-		File file = conn.save(id, filename, fileType);
-		return file;
+		return conn.save(id, filename, fileType);
 	}
 }

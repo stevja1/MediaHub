@@ -8,19 +8,33 @@ import java.util.Set;
 @Entity
 @Table(name = "album")
 public class Album implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	private long id;
+
+	@ManyToOne(optional = false,targetEntity = Artist.class)
+	@JoinColumn(name = "artist_id",nullable = false)
 	private Artist artist;
+
+	@Column(nullable=false)
 	private String title;
+
+	@Column(name="release_date",nullable=false)
 	private Date releaseDate;
+
+	@Column(name="track_count",nullable=false)
 	private int trackCount;
+
+	@Column(name="disc_num",nullable=false)
 	private int discNum;
+
+	@OneToMany(mappedBy = "album")
+	@OrderBy("trackNum,id ASC")
 	private Set<Song> songs;
 
 	/**
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
 	public long getId() {
 		return id;
 	}
@@ -31,8 +45,6 @@ public class Album implements Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(optional = false,targetEntity = Artist.class)
-	@JoinColumn(name = "artist_id",nullable = false)
 	public Artist getArtist() {
 		return artist;
 	}
@@ -41,7 +53,6 @@ public class Album implements Serializable {
 		this.artist = artist;
 	}
 
-	@Column(nullable=false)
 	public String getTitle() {
 		return title;
 	}
@@ -50,7 +61,6 @@ public class Album implements Serializable {
 		this.title = title;
 	}
 
-	@Column(name="release_date",nullable=false)
 	public Date getReleaseDate() {
 		return releaseDate;
 	}
@@ -59,7 +69,6 @@ public class Album implements Serializable {
 		this.releaseDate = releaseDate;
 	}
 
-	@Column(name="track_count",nullable=false)
 	public int getTrackCount() {
 		return trackCount;
 	}
@@ -68,7 +77,6 @@ public class Album implements Serializable {
 		this.trackCount = trackCount;
 	}
 
-	@Column(name="disc_num",nullable=false)
 	public int getDiscNum() {
 		return discNum;
 	}
@@ -77,8 +85,6 @@ public class Album implements Serializable {
 		this.discNum = discNum;
 	}
 
-	@OneToMany(mappedBy = "album")
-	@OrderBy("trackNum,id ASC")
 	public Set<Song> getSongs() {
 		return songs;
 	}

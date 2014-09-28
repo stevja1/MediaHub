@@ -14,7 +14,7 @@ and Dropbox.
 The current goal is to simply replace Google Music/iTunes Cloud/Amazon Cloud Player with something I can host at home.
 
 The reasons I started are:
-* Amazon started dropping MP3s that I purchased and stored in their cloud. This provided to possible way for me to get
+* Amazon started dropping MP3s that I purchased and stored in their cloud. This made it impossible for me to get
 access to the media that I PAID MONEY FOR. Luckily, I had also uploaded my music to Google Music and also had a local
 backup. Its annoying though when a song you want isn't available.
 * I hate waiting hours for my music to upload.

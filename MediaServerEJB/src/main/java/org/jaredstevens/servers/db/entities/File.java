@@ -22,15 +22,22 @@ public class File implements Serializable {
 		IMAGE
 	}
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	private long id;
-	private String filename;
+
+	@Basic
+	@Column(nullable=false)
+	@Enumerated(EnumType.STRING)
 	private FileType type;
+
+	@Basic
+	@Column(nullable=false)
+	private String filename;
 
 	/**
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
 	public long getId() {
 		return id;
 	}
@@ -43,9 +50,6 @@ public class File implements Serializable {
 	/**
 	 * @return the file type
 	 */
-	@Basic
-	@Column(nullable=false)
-	@Enumerated(EnumType.STRING)
 	public FileType getType() {
 		return this.type;
 	}
@@ -57,8 +61,6 @@ public class File implements Serializable {
 		this.type = type;
 	}
 
-	@Basic
-	@Column(nullable=false)
 	public String getFilename() {
 		return filename;
 	}

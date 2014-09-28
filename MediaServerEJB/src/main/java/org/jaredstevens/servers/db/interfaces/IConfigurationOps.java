@@ -7,5 +7,5 @@ import javax.ejb.Remote;
 @Remote
 public interface IConfigurationOps {
 	public Configuration get();
-	public Configuration save(String songPath);
+	public Configuration save(String songPath, String scriptsRoot);
 }

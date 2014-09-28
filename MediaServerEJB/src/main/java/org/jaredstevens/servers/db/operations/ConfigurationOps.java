@@ -27,9 +27,10 @@ public class ConfigurationOps implements IConfigurationOps {
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	public Configuration save(String songPath) {
+	public Configuration save(String mediaRoot, String scriptsRoot) {
 		Configuration config = new Configuration();
-		config.setSongPath(songPath);
+		config.setScriptsRoot(scriptsRoot);
+		config.setMediaRoot(mediaRoot);
 		this.getEm().persist(config);
 		return config;
 	}

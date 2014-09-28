@@ -7,15 +7,20 @@ import java.util.Set;
 @Entity
 @Table(name = "artist")
 public class Artist implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	private long id;
+
+	@Column(nullable=false)
 	private String name;
+
+	@OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
+	@OrderBy("releaseDate DESC")
 	private Set<Album> albums;
 
 	/**
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
 	public long getId() {
 		return id;
 	}
@@ -26,7 +31,6 @@ public class Artist implements Serializable {
 		this.id = id;
 	}
 
-	@Column(nullable=false)
 	public String getName() {
 		return name;
 	}
@@ -35,8 +39,6 @@ public class Artist implements Serializable {
 		this.name = name;
 	}
 
-	@OneToMany(mappedBy = "artist")
-	@OrderBy("releaseDate DESC")
 	public Set<Album> getAlbums() {
 		return albums;
 	}

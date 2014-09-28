@@ -7,19 +7,33 @@ import java.util.Set;
 @Entity
 @Table(name = "song")
 public class Song implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	private long id;
+
+	@Column(nullable = false)
 	private String title;
+
+	@Column(nullable = false,length = 4000)
 	private String fingerprint;
+
+	@Column(nullable = false)
 	private int duration;
+
+	@Column(name = "track_num", nullable = false)
 	private int trackNum;
+
+	@ManyToOne(optional = false,targetEntity = Album.class)
+	@JoinColumn(name="album_id",nullable=false)
 	private Album album;
+
+	@ManyToOne(optional=true,targetEntity = File.class)
+	@JoinColumn(name="file_id",nullable=false)
 	private File file;
 
 	/**
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
 	public long getId() {
 		return id;
 	}
@@ -30,7 +44,6 @@ public class Song implements Serializable {
 		this.id = id;
 	}
 
-	@Column(nullable = false)
 	public String getTitle() {
 		return title;
 	}
@@ -39,7 +52,6 @@ public class Song implements Serializable {
 		this.title = title;
 	}
 
-	@Column(nullable = false,length = 4000)
 	public String getFingerprint() {
 		return fingerprint;
 	}
@@ -48,7 +60,6 @@ public class Song implements Serializable {
 		this.fingerprint = fingerprint;
 	}
 
-	@Column(nullable = false)
 	public int getDuration() {
 		return duration;
 	}
@@ -57,7 +68,6 @@ public class Song implements Serializable {
 		this.duration = duration;
 	}
 
-	@Column(name = "track_num", nullable = false)
 	public int getTrackNum() {
 		return trackNum;
 	}
@@ -66,8 +76,6 @@ public class Song implements Serializable {
 		this.trackNum = trackNum;
 	}
 
-	@ManyToOne(optional = false,targetEntity = Album.class)
-	@JoinColumn(name="album_id",nullable=false)
 	public Album getAlbum() {
 		return album;
 	}
@@ -76,8 +84,6 @@ public class Song implements Serializable {
 		this.album = album;
 	}
 
-	@ManyToOne(optional=true,targetEntity = File.class)
-	@JoinColumn(name="file_id",nullable=false)
 	public File getFile() {
 		return file;
 	}
