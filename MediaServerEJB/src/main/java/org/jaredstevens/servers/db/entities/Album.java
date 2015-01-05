@@ -3,6 +3,7 @@ package org.jaredstevens.servers.db.entities;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Set;
 
 @Entity
@@ -11,10 +12,6 @@ public class Album implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private long id;
-
-	@ManyToOne(optional = false,targetEntity = Artist.class)
-	@JoinColumn(name = "artist_id",nullable = false)
-	private Artist artist;
 
 	@Column(nullable=false)
 	private String title;
@@ -45,17 +42,7 @@ public class Album implements Serializable {
 		this.id = id;
 	}
 
-	public Artist getArtist() {
-		return artist;
-	}
-
-	public void setArtist(Artist artist) {
-		this.artist = artist;
-	}
-
-	public String getTitle() {
-		return title;
-	}
+	public String getTitle() { return title; }
 
 	public void setTitle(String title) {
 		this.title = title;
@@ -85,11 +72,29 @@ public class Album implements Serializable {
 		this.discNum = discNum;
 	}
 
-	public Set<Song> getSongs() {
-		return songs;
-	}
+	public Set<Song> getSongs() { return songs;	}
 
-	public void setSongs(Set<Song> songs) {
-		this.songs = songs;
+	public void setSongs(Set<Song> songs) {	this.songs = songs;	}
+
+	@Override
+	public String toString() {
+		StringBuffer retVal = new StringBuffer();
+		Date albumReleaseDate = this.getReleaseDate();
+		String releaseDate;
+		if(albumReleaseDate != null) {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			releaseDate = df.format(albumReleaseDate);
+		} else releaseDate = "null";
+		retVal.append("id: ")
+				.append(this.getId())
+				.append(" title: ")
+				.append(this.getTitle())
+				.append(" releaseDate: ")
+				.append(releaseDate)
+				.append(" trackCount: ")
+				.append(this.getTrackCount())
+				.append(" discNum: ")
+				.append(this.getDiscNum());
+		return retVal.toString();
 	}
 }

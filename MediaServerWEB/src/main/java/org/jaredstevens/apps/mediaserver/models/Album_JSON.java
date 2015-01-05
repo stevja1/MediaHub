@@ -7,7 +7,6 @@ import java.util.*;
 
 public class Album_JSON {
 	private long id;
-	private Artist_JSON artist;
 	private String title;
 	private Date releaseDate;
 	private int trackCount;
@@ -16,7 +15,6 @@ public class Album_JSON {
 	public static Album_JSON albumFactory(Album album) {
 		Album_JSON retVal = new Album_JSON();
 		retVal.setId(album.getId());
-		retVal.setArtist(Artist_JSON.artistFactory(album.getArtist()));
 		retVal.setTitle(album.getTitle());
 		retVal.setReleaseDate(album.getReleaseDate());
 		retVal.setTrackCount(album.getTrackCount());
@@ -39,14 +37,6 @@ public class Album_JSON {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public Artist_JSON getArtist() {
-		return artist;
-	}
-
-	public void setArtist(Artist_JSON artist) {
-		this.artist = artist;
 	}
 
 	public String getTitle() {

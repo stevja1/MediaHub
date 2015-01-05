@@ -14,10 +14,6 @@ import javax.persistence.Query;
 import org.jaredstevens.servers.db.entities.File;
 import org.jaredstevens.servers.db.interfaces.IFileOps;
 
-/**
- * @author jstevens
- *
- */
 @Stateless(name="FileOps",mappedName="FileOps")
 @Remote
 public class FileOps implements IFileOps {
@@ -27,7 +23,7 @@ public class FileOps implements IFileOps {
 	public File getById(long id) {
 		File retVal = null;
 		if(this.getEm() != null) {
-			retVal = (File)this.getEm().find(File.class, id);
+			retVal = this.getEm().find(File.class, id);
 		}
 		return retVal;
 	}
@@ -41,6 +37,33 @@ public class FileOps implements IFileOps {
 			String sql = "SELECT f FROM File f WHERE f.filename=:filename";
 			Query query = this.em.createQuery(sql, File.class);
 			query.setParameter("filename", filename);
+			@SuppressWarnings("unchecked")
+			List<File> results = query.getResultList();
+			if(results != null) {
+				retVal = results;
+			}
+		}
+		return retVal;
+	}
+
+	/**
+	 * Gets all files by a certain type
+	 * @todo Implement pageSize and pageIndex
+	 * @param type The file type to query by
+	 * @param pageSize The number of results per page
+	 * @param pageIndex The page to return
+	 * @return A paginated list of File objects
+	 */
+	public List<File> getFilesByFileType(File.FileType type, int pageSize, int pageIndex) {
+		List<File> retVal = null;
+		EntityManager em = null;
+		if(this.getEm() != null)
+			em = this.getEm();
+		if(em != null) {
+			String sql = "SELECT f FROM File f WHERE f.type=:type";
+			Query query = this.em.createQuery(sql, File.class);
+			query.setParameter("type", type);
+			@SuppressWarnings("unchecked")
 			List<File> results = query.getResultList();
 			if(results != null) {
 				retVal = results;
@@ -58,14 +81,14 @@ public class FileOps implements IFileOps {
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public File save(long id, String filename, File.FileType type) {
-		File retVal = null;
+		File retVal;
 		File fileEntry = new File();
 		if(id > 0) fileEntry.setId(id);
 		fileEntry.setFilename(filename);
 		fileEntry.setType(type);
 		this.getEm().persist(fileEntry);
 		if(fileEntry.getId() == 0) this.getEm().flush();
-		if(fileEntry != null) retVal = fileEntry;
+		retVal = fileEntry;
 		return retVal;
 	}
 
@@ -77,15 +100,15 @@ public class FileOps implements IFileOps {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public boolean remove(long id) {
 		if(id > 0) {
-			File fileEntry = null;
-			fileEntry = (File)this.getEm().find(File.class, id);
+			File fileEntry;
+			fileEntry = this.getEm().find(File.class, id);
 			if(fileEntry != null) this.getEm().remove(fileEntry);
 		}
 		return true;
 	}
 
 	public Number getRowCount() {
-		Number retVal = -1;
+		Number retVal;
 		Query sql = this.getEm().createQuery("SELECT count(f) FROM File f");
 		retVal = (Number)sql.getSingleResult();
 		return retVal;

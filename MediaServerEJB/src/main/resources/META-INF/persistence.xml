@@ -9,7 +9,7 @@
         <class>org.jaredstevens.servers.db.entities.Song</class>
         <class>org.jaredstevens.servers.db.entities.Album</class>
         <class>org.jaredstevens.servers.db.entities.Artist</class>
-        <class>org.jaredstevens.servers.db.entities.Configuration</class>
+		<class>org.jaredstevens.servers.db.entities.User</class>
 		<properties>
 		<!--
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>

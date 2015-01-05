@@ -3,7 +3,7 @@
 <head>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="viewport" content = "user-scalable = no" />
-    <title>Jamz</title>
+    <title>MediaBase</title>
 	<LINK rel="stylesheet" type="text/css">
 	<script src="lib/js/jquery-1.10.2.min.js"></script>
     <script src="lib/js/APIConfig.js"></script>
@@ -103,14 +103,38 @@
                 $(queueItem).attr("id", response.data[key].id);
                 $(queueItem).text(name);
                 $(queueItem).click(function(e) {
-                    console.log("Getting songs for artist: "+e.target.id);
-                    MediaServerWS.getArtistSongs(e.target.id, getSongsComplete);
+                    console.log("Getting albums for artist: "+e.target.id);
+                    MediaServerWS.getArtistAlbums(e.target.id, getArtistAlbumsComplete);
                 });
                 $("#musicQueue").append(queueItem);
             }
             // Scroll viewport to the top
             $("#list_display").scrollTop(0);
         }
+    }
+    function getArtistAlbumsComplete(response) {
+        var album;
+        if(response.status == "ERROR") {
+            console.log("There was an error getting the song info.");
+            return;
+        }
+        $("#musicQueue").empty();
+        queueData = new Array();
+        for(key in response.data) {
+            album = response.data[key];
+            queueItem = document.createElement("li");
+            $(queueItem).addClass("list_item");
+            $(queueItem).attr("id", album.id);
+            $(queueItem).text(album.title);
+            $(queueItem).click(function(e) {
+                console.out("Getting songs for album: "+e.target.id);
+                MediaServerWS.getAlbumSongs(e.target.id, getSongsComplete);
+            });
+            $("#musicQueue").append(queueItem);
+            queueData[album.id] = album;
+        }
+        // Scroll viewport to the top
+        $("#list_display").scrollTop(0);
     }
     function getSongs() {
         MediaServerWS.getSongs(1400, 0, getSongsComplete);
@@ -129,16 +153,17 @@
         for(key in response.data) {
             song = response.data[key];
             title = song.title;
-            songURL = APIConfig.HOST+song.file.filename;
+            // songURL = APIConfig.HOST+song.file.filename;
             queueItem = document.createElement("li");
             $(queueItem).addClass("list_item");
             $(queueItem).attr("id", song.id);
             $(queueItem).text(title);
             $(queueItem).click(function(e) {
                 currentQueueItem = e.target;
-                playSong(currentQueueItem.id);
-                $(".item_playing", "#musicQueue").toggleClass("item_playing");
-                $(e.target).addClass("item_playing");
+                console.log("I'd play song "+currentQueueItem.id+" but I don't have a URL for the song.");
+                // playSong(currentQueueItem.id);
+                // $(".item_playing", "#musicQueue").toggleClass("item_playing");
+                // $(e.target).addClass("item_playing");
             });
             $("#musicQueue").append(queueItem);
             queueData[song.id] = song;

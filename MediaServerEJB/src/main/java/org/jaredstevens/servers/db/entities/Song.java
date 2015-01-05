@@ -11,6 +11,22 @@ public class Song implements Serializable {
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private long id;
 
+	@ManyToOne(optional = false,targetEntity = Album.class)
+	@JoinColumn(name="album_id",nullable=false)
+	private Album album;
+
+	@ManyToOne(optional = false,targetEntity = Artist.class)
+	@JoinColumn(name="artist_id",nullable=false)
+	private Artist artist;
+
+	@ManyToOne(optional=true,targetEntity = File.class)
+	@JoinColumn(name="file_id",nullable=false)
+	private File file;
+
+	@ManyToMany(targetEntity = org.jaredstevens.servers.db.entities.User.class)
+	@JoinTable(name="user_songs")
+	private Set<User> users;
+
 	@Column(nullable = false)
 	private String title;
 
@@ -23,72 +39,54 @@ public class Song implements Serializable {
 	@Column(name = "track_num", nullable = false)
 	private int trackNum;
 
-	@ManyToOne(optional = false,targetEntity = Album.class)
-	@JoinColumn(name="album_id",nullable=false)
-	private Album album;
-
-	@ManyToOne(optional=true,targetEntity = File.class)
-	@JoinColumn(name="file_id",nullable=false)
-	private File file;
-
-	/**
-	 * @return the id
-	 */
 	public long getId() {
 		return id;
 	}
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(long id) {
 		this.id = id;
 	}
-
-	public String getTitle() {
-		return title;
+	public Artist getArtist() {
+		return artist;
 	}
-
-	public void setTitle(String title) {
-		this.title = title;
+	public void setArtist(Artist artist) {
+		this.artist = artist;
 	}
-
-	public String getFingerprint() {
-		return fingerprint;
-	}
-
-	public void setFingerprint(String fingerprint) {
-		this.fingerprint = fingerprint;
-	}
-
-	public int getDuration() {
-		return duration;
-	}
-
-	public void setDuration(int duration) {
-		this.duration = duration;
-	}
-
-	public int getTrackNum() {
-		return trackNum;
-	}
-
-	public void setTrackNum(int trackNum) {
-		this.trackNum = trackNum;
-	}
-
 	public Album getAlbum() {
 		return album;
 	}
-
 	public void setAlbum(Album album) {
 		this.album = album;
 	}
-
 	public File getFile() {
 		return file;
 	}
-
 	public void setFile(File file) {
 		this.file = file;
 	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getFingerprint() {
+		return fingerprint;
+	}
+	public void setFingerprint(String fingerprint) {
+		this.fingerprint = fingerprint;
+	}
+	public int getDuration() {
+		return duration;
+	}
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+	public int getTrackNum() {
+		return trackNum;
+	}
+	public void setTrackNum(int trackNum) {
+		this.trackNum = trackNum;
+	}
+	public Set<User> getUsers() { return users; }
+	public void setUsers(Set<User> users) { this.users = users; }
 }

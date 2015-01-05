@@ -8,21 +8,21 @@ import java.util.List;
 public class Song_JSON {
 	private long id;
 	private String title;
-	private String fingerprint;
 	private int duration;
 	private int trackNum;
 	private Album_JSON album;
 	private File_JSON file;
+	private Artist_JSON artist;
 
 	public static Song_JSON songFactory(Song song) {
 		Song_JSON retVal = new Song_JSON();
 		retVal.setId(song.getId());
 		retVal.setTitle(song.getTitle());
-		retVal.setFingerprint(song.getFingerprint());
 		retVal.setDuration(song.getDuration());
 		retVal.setTrackNum(song.getTrackNum());
 		retVal.setAlbum(Album_JSON.albumFactory(song.getAlbum()));
 		retVal.setFile(File_JSON.fileFactory(song.getFile()));
+		retVal.setArtist(Artist_JSON.artistFactory(song.getArtist()));
 		return retVal;
 	}
 
@@ -49,14 +49,6 @@ public class Song_JSON {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public String getFingerprint() {
-		return fingerprint;
-	}
-
-	public void setFingerprint(String fingerprint) {
-		this.fingerprint = fingerprint;
 	}
 
 	public int getDuration() {
@@ -90,4 +82,8 @@ public class Song_JSON {
 	public void setFile(File_JSON file) {
 		this.file = file;
 	}
+
+	public Artist_JSON getArtist() { return artist;	}
+
+	public void setArtist(Artist_JSON artist) { this.artist = artist; }
 }

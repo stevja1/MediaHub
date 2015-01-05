@@ -10,7 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import java.sql.Date;
 
 import static org.junit.Assert.*;
 
@@ -38,7 +37,7 @@ public class AlbumOpsTest {
 		Artist artist = OpsUtils.saveArtistRecord(this.em);
 		if(artist.getId() <= 0) fail("Failed to save a test artist record.");
 
-		Album album = OpsUtils.saveAlbumRecord(artist, this.em);
+		Album album = OpsUtils.saveAlbumRecord(this.em);
 		if(album.getId() <= 0) fail("Failed to save a test album record.");
 
 		Album album2 = conn.getById(album.getId());

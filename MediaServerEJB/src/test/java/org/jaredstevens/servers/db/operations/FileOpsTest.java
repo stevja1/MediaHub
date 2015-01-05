@@ -9,7 +9,6 @@ import javax.persistence.Persistence;
 import org.jaredstevens.servers.db.entities.File;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;

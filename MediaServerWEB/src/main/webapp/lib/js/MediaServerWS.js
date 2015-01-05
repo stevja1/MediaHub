@@ -9,6 +9,13 @@ MediaServerWS.getArtists = function(pageCount, pageIndex, callback) {
 	$.ajax(settings);
 };
 
+MediaServerWS.getArtistAlbums = function(artistId, callback) {
+    var method = "getArtistAlbums/";
+    var parameters = artistId;
+	var settings = {url: MediaServerWS.URL+method+parameters, success:callback, async: true};
+	$.ajax(settings);
+}
+
 MediaServerWS.getArtistSongs = function( artistId, callback )
 {
     var method = "getArtistSongs/";
@@ -43,6 +50,20 @@ MediaServerWS.saveSong = function(id, fileId, albumId, title, duration, trackNum
 MediaServerWS.removeSong = function(id, callback) {
     var method = "removeSong/";
     var parameters = id;
+	var settings = {url: MediaServerWS.URL+method+parameters, success:callback, async: true};
+	$.ajax(settings);
+};
+
+MediaServerWS.authenticate = function(firstName, lastName, OAuthId, callback) {
+    var method = "authenticate/";
+    var parameters = firstName+"/"+lastName+"/"+OAuthId;
+	var settings = {url: MediaServerWS.URL+method+parameters, success:callback, async: true};
+	$.ajax(settings);
+};
+
+MediaServerWS.isAuthenticated = function(callback) {
+    var method = "isAuthenticated/";
+    var parameters = "";
 	var settings = {url: MediaServerWS.URL+method+parameters, success:callback, async: true};
 	$.ajax(settings);
 };

@@ -1,0 +1,7 @@
+{
+  "scriptPath":"/home/jarestev/MediaServer/scripts",
+  "mediaPath":"/home/jarestev/MediaServer/media",
+  "mediaBaseURL":"http://apps.jaredstevens.org/media",
+  "mediaAPIURL":"http://apps.jaredstevens.org/MediaServerWS/conduit",
+  "acoustIDKey":"TESTKEY"
+}

@@ -1,7 +1,5 @@
 package org.jaredstevens.apps.mediaserver.controllers;
 
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.Mp3File;
 import org.jaredstevens.apps.mediaserver.models.Album_JSON;
 import org.jaredstevens.apps.mediaserver.models.Artist_JSON;
 import org.jaredstevens.apps.mediaserver.models.Response_JSON;
@@ -9,21 +7,26 @@ import org.jaredstevens.apps.mediaserver.models.Song_JSON;
 import org.jaredstevens.servers.db.entities.Album;
 import org.jaredstevens.servers.db.entities.Artist;
 import org.jaredstevens.servers.db.entities.Song;
+import org.jaredstevens.servers.db.entities.User;
 import org.jaredstevens.servers.db.interfaces.IAlbumOps;
 import org.jaredstevens.servers.db.interfaces.IArtistOps;
 import org.jaredstevens.servers.db.interfaces.ISongOps;
-import org.jaredstevens.servers.timers.IPopulateMetaData;
+import org.jaredstevens.servers.db.interfaces.IUserOps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ejb.EJB;
-import java.io.Serializable;
+import javax.servlet.http.HttpSession;
 import java.sql.Date;
 import java.util.List;
 
 @Controller
 public class JSONEndpoint {
+	private static Logger logger = LoggerFactory.getLogger(JSONEndpoint.class);
+
 	@EJB(mappedName="java:module/ArtistOps")
 	private IArtistOps artistService;
 
@@ -33,24 +36,28 @@ public class JSONEndpoint {
 	@EJB(mappedName="java:module/SongOps")
 	private ISongOps songService;
 
-	@EJB(mappedName="java:module/PopulateMetaData")
-	private IPopulateMetaData metaDataService;
-
-//	@EJB(mappedName="java:module/FileOps")
-//	private IFileOps fileService;
+	@EJB(mappedName="java:module/UserOps")
+	private IUserOps userService;
 
 	/**
 	 * Artist Methods
 	 */
 	@RequestMapping(value="/getArtists/{pageCount}/{pageIndex}", method = RequestMethod.GET)
-	public @ResponseBody Response_JSON getArtists(@PathVariable int pageCount,@PathVariable int pageIndex) throws Exception {
+	public @ResponseBody Response_JSON getArtists(@PathVariable int pageCount,@PathVariable int pageIndex, HttpSession session) throws Exception {
 		Response_JSON retVal = new Response_JSON();
-		List<Artist> artists = this.artistService.getArtists(pageCount, pageIndex);
+		Long userId = (Long)session.getAttribute("userId");
+		if(userId == null) {
+			retVal.setStatus(Response_JSON.Status.ERROR);
+			retVal.setMessage("Invalid user, or user not logged in.");
+			return retVal;
+		}
+		List<Artist> artists = this.artistService.getArtists(userId, pageCount, pageIndex);
 		if(artists == null) throw new Exception("No artists were found in the database.");
 		retVal.setData(Artist_JSON.artistFactory(artists));
 		return retVal;
 	}
 
+	/*
 	@RequestMapping(value="/saveArtist/{id}/{name}", method = RequestMethod.GET)
 	public @ResponseBody Response_JSON saveArtist(@PathVariable long id,@PathVariable String name) throws Exception {
 		Response_JSON retVal = new Response_JSON();
@@ -76,19 +83,27 @@ public class JSONEndpoint {
 		retVal.setData(this.artistService.remove(id));
 		return retVal;
 	}
+	*/
 
 	/**
 	 * Album Methods
  	 */
 	@RequestMapping(value="/getArtistAlbums/{artistId}", method = RequestMethod.GET)
-	public @ResponseBody Response_JSON getArtistAlbums(@PathVariable long artistId) throws Exception {
+	public @ResponseBody Response_JSON getArtistAlbums(@PathVariable long artistId, HttpSession session) throws Exception {
 		Response_JSON retVal = new Response_JSON();
-		List<Album> albums = this.albumService.getArtistAlbums(artistId);
+		Long userId = (Long)session.getAttribute("userId");
+		if(userId == null) {
+			retVal.setStatus(Response_JSON.Status.ERROR);
+			retVal.setMessage("Invalid user, or user not logged in.");
+			return retVal;
+		}
+		List<Album> albums = this.albumService.getArtistAlbums(userId, artistId);
 		if(albums == null) throw new Exception("Couldn't find albums for artistId: "+artistId);
 		retVal.setData(Album_JSON.albumFactory(albums));
 		return retVal;
 	}
 
+	/*
 	@RequestMapping(value="/getAlbums/{pageCount}/{pageIndex}", method = RequestMethod.GET)
 	public @ResponseBody Response_JSON getAlbums(@PathVariable int pageCount,@PathVariable int pageIndex) throws Exception {
 		Response_JSON retVal = new Response_JSON();
@@ -109,9 +124,9 @@ public class JSONEndpoint {
 		Response_JSON retVal = new Response_JSON();
 		Date releaseDate = new Date(rawReleaseDate);
 		Album album;
-		album = this.albumService.save(id, artistId, title, releaseDate, trackCount, discNum);
-		if(album == null) throw new Exception("There was a problem saving the album.");
-		retVal.setData(Album_JSON.albumFactory(album));
+//		album = this.albumService.save(id, artistId, title, releaseDate, trackCount, discNum);
+//		if(album == null) throw new Exception("There was a problem saving the album.");
+//		retVal.setData(Album_JSON.albumFactory(album));
 		return retVal;
 	}
 
@@ -130,10 +145,11 @@ public class JSONEndpoint {
 		retVal.setData(this.albumService.remove(id));
 		return retVal;
 	}
-
+	*/
 	/**
 	 * Song Methods
 	 */
+	/*
 	@RequestMapping(value="/getSong/{songId}", method = RequestMethod.GET)
 	public @ResponseBody Response_JSON getSong(@PathVariable long songId) throws Exception {
 		Response_JSON retVal = new Response_JSON();
@@ -151,16 +167,22 @@ public class JSONEndpoint {
 		retVal.setData(songs);
 		return retVal;
 	}
-
+	*/
 	@RequestMapping(value="/getAlbumSongs/{albumId}", method = RequestMethod.GET)
-	public @ResponseBody Response_JSON getAlbumSongs(@PathVariable long albumId) throws Exception {
+	public @ResponseBody Response_JSON getAlbumSongs(@PathVariable long albumId, HttpSession session) throws Exception {
 		Response_JSON retVal = new Response_JSON();
-		List<Song> songs = this.songService.getAlbumSongs(albumId);
+		Long userId = (Long)session.getAttribute("userId");
+		if(userId == null) {
+			retVal.setStatus(Response_JSON.Status.ERROR);
+			retVal.setMessage("Invalid user, or user not logged in.");
+			return retVal;
+		}
+		List<Song> songs = this.songService.getAlbumSongs(userId, albumId);
 		if(songs == null) throw new Exception("Couldn't find any songs for album id: "+albumId);
-		retVal.setData(songs);
+		retVal.setData(Song_JSON.songFactory(songs));
 		return retVal;
 	}
-
+	/*
 	@RequestMapping(value="/getSongs/{pageCount}/{pageIndex}", method = RequestMethod.GET)
 	public @ResponseBody Response_JSON getSongs(@PathVariable int pageCount, @PathVariable int pageIndex) throws Exception {
 		Response_JSON retVal = new Response_JSON();
@@ -180,9 +202,9 @@ public class JSONEndpoint {
 			@PathVariable int trackNum,
 			@PathVariable String fingerprint) throws Exception {
 		Response_JSON retVal = new Response_JSON();
-		Song_JSON song = Song_JSON.songFactory(this.songService.save(id, fileId, albumId, title, duration, trackNum, fingerprint));
-		if(song == null) throw new Exception("Couldn't save song.");
-		retVal.setData(song);
+//		Song_JSON song = Song_JSON.songFactory(this.songService.save(id, fileId, albumId, title, duration, trackNum, fingerprint));
+//		if(song == null) throw new Exception("Couldn't save song.");
+//		retVal.setData(song);
 		return retVal;
 	}
 
@@ -194,39 +216,45 @@ public class JSONEndpoint {
 		retVal.setData(removeResult);
 		return retVal;
 	}
-
-	@RequestMapping(value="/getID3Tag/{filename}", method = RequestMethod.GET)
-	public @ResponseBody String getID3Tag(@PathVariable String filename) throws Exception {
-		String retVal = null;
-		filename = filename.replace('|','/')+".mp3";
-		Mp3File song = new Mp3File(filename);
-		if(song.hasId3v2Tag()) {
-			ID3v2 tag = song.getId3v2Tag();
-			String artist = "Unknown Artist";
-			String album = tag.getAlbum();
-			if(tag.getArtist() != null) artist = tag.getArtist();
-			else if(tag.getAlbumArtist() != null) artist = tag.getAlbumArtist();
-			else if(tag.getOriginalArtist() != null) artist = tag.getOriginalArtist();
-			String title = tag.getTitle();
-			String track = tag.getTrack();
-			retVal = track+" | "+artist+" | "+album+" | "+title;
+	*/
+	@RequestMapping(value="/authenticate/{firstName}/{lastName}/{OAuthID}", method = RequestMethod.GET)
+	public @ResponseBody Response_JSON authenticate(@PathVariable String firstName, @PathVariable String lastName, @PathVariable String OAuthID, HttpSession session) throws Exception {
+		Response_JSON retVal = new Response_JSON();
+		retVal.setStatus(Response_JSON.Status.ERROR);
+		// See if this is an existing user
+		User user = this.userService.getByOAuthId(OAuthID);
+		if(user == null) {
+			// This user is missing. Create the user.
+			user = this.userService.save(-1, firstName, lastName, OAuthID);
+			retVal.setMessage("User successfully created.");
+		} else {
+			retVal.setMessage("User successfully found.");
+		}
+		if(user != null) {
+			// Setup our session
+			session.setAttribute("userId", user.getId());
+			retVal.setStatus(Response_JSON.Status.SUCCESS);
 		}
 		return retVal;
 	}
 
-	@RequestMapping(value="/startMetaDataTimer/", method = RequestMethod.GET)
-	public @ResponseBody	Serializable startMetaDataTimer() throws Exception {
-		return this.metaDataService.startTimer();
-	}
-
-	@RequestMapping(value="/stopMetaDataTimer/", method = RequestMethod.GET)
-	public @ResponseBody	void stopMetaDataTimer() throws Exception {
-		this.metaDataService.stopTimer();
-	}
-
-	@RequestMapping(value="/getTimers/", method = RequestMethod.GET)
-	public @ResponseBody	String getTimers() throws Exception {
-		return this.metaDataService.getTimers();
+	@RequestMapping(value="/isAuthenticated", method = RequestMethod.GET)
+	public @ResponseBody Response_JSON isAuthenticated(HttpSession session) throws Exception {
+		Response_JSON retVal = new Response_JSON();
+		retVal.setStatus(Response_JSON.Status.ERROR);
+		Long userId = (Long)session.getAttribute("userId");
+		User user = null;
+		if(userId != null) {
+			user = this.userService.getById(userId);
+		}
+		if(user != null) {
+			retVal.setStatus(Response_JSON.Status.SUCCESS);
+			retVal.setMessage(user.getFirstName()+" is authenticated.");
+		} else {
+			retVal.setStatus(Response_JSON.Status.ERROR);
+			retVal.setMessage("User is NOT authenticated.");
+		}
+		return retVal;
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -234,20 +262,13 @@ public class JSONEndpoint {
 	public @ResponseBody Response_JSON handleException(Exception e) {
 		Response_JSON retVal = new Response_JSON();
 		retVal.setStatus(Response_JSON.Status.ERROR);
-		if(e.getMessage() != null && e.getMessage().length() > 0)
+		if(e.getMessage() != null && e.getMessage().length() > 0) {
 			retVal.setMessage(e.getMessage());
-		else retVal.setMessage("Unknown exception thrown: " + e.toString());
-		return retVal;
-	}
-
-	/**
-	 * Music Import methods
-	 */
-	@RequestMapping(value="/reinitializeLibrary/{directory}", method = RequestMethod.GET)
-	public @ResponseBody Response_JSON reinitializeLibrary(@PathVariable String directory) throws Exception {
-		Response_JSON retVal = new Response_JSON();
-		retVal.setStatus(Response_JSON.Status.ERROR);
-
+			JSONEndpoint.logger.error("Exception: ", e);
+		} else {
+			retVal.setMessage("Unknown exception thrown: " + e.toString());
+			JSONEndpoint.logger.error("Exception: ", e);
+		}
 		return retVal;
 	}
 }

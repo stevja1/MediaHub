@@ -1,0 +1,6 @@
+{
+  "scriptPath":"/home/jarestev/test-scripts",
+  "mediaPath":"/home/jarestev/test-media",
+  "mediaBaseURL":"http://apps.jaredstevens.org/test-media",
+  "mediaAPIURL":"http://apps.jaredstevens.org/test-MediaServerWS"
+}

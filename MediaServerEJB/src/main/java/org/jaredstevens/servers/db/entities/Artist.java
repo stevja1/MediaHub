@@ -14,9 +14,9 @@ public class Artist implements Serializable {
 	@Column(nullable=false)
 	private String name;
 
-	@OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
-	@OrderBy("releaseDate DESC")
-	private Set<Album> albums;
+	@OneToMany(mappedBy = "artist")
+	@OrderBy("trackNum,id ASC")
+	private Set<Song> songs;
 
 	/**
 	 * @return the id
@@ -39,11 +39,11 @@ public class Artist implements Serializable {
 		this.name = name;
 	}
 
-	public Set<Album> getAlbums() {
-		return albums;
+	public Set<Song> getSongs() {
+		return songs;
 	}
 
-	public void setAlbums(Set<Album> albums) {
-		this.albums = albums;
+	public void setSongs(Set<Song> songs) {
+		this.songs = songs;
 	}
 }

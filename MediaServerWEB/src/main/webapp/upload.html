@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload a file</title>
+</head>
+<body>
+<p>
+    File Upload Utility
+    <form method="POST" action="conduit/uploadMultipleFile" enctype="multipart/form-data">
+        Files to upload (hold CTRL or SHIFT to select multiple files): <input type="file" name="file" multiple><br />
+        <input type="submit" value="Upload"> Press here to upload the file!
+    </form>
+</p>
+
+<p>
+    File Type Utility
+    <form method="POST" action="conduit/detectType" enctype="multipart/form-data">
+        Files to upload (hold CTRL or SHIFT to select multiple files): <input type="file" name="file" multiple><br />
+        <input type="submit" value="Upload"> Press here to upload the file!
+    </form>
+</p>
+</body>
+</html>

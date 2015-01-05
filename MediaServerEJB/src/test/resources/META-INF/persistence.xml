@@ -5,11 +5,11 @@
 	<persistence-unit name="MediaDBTest-PU" transaction-type="RESOURCE_LOCAL">
 		<description>Media Server Persistent Unit</description>
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<class>org.jaredstevens.servers.db.entities.File</class>
-		<class>org.jaredstevens.servers.db.entities.Song</class>
 		<class>org.jaredstevens.servers.db.entities.Album</class>
 		<class>org.jaredstevens.servers.db.entities.Artist</class>
-		<class>org.jaredstevens.servers.db.entities.Configuration</class>
+		<class>org.jaredstevens.servers.db.entities.File</class>
+		<class>org.jaredstevens.servers.db.entities.Song</class>
+		<class>org.jaredstevens.servers.db.entities.User</class>
 		<properties>
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
 			<property name="openjpa.Log" value="DefaultLevel=WARN, Runtime=INFO, Tool=INFO, SQL=TRACE"/>
@@ -19,7 +19,7 @@
 			<property name="openjpa.ConnectionFactoryMode" value="managed" />
 			<property name="jta.UserTransaction" value="java:comp/UserTransaction" />
 		-->
-			<property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost:3306/MediaDB"/>
+			<property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost:3306/MediaDBTest"/>
 			<property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
 			<property name="openjpa.ConnectionUserName" value="media"/>
 			<property name="openjpa.ConnectionPassword" value="0dff94cb8c63cbc8fce84044c7d8db29"/>	
